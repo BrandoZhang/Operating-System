@@ -66,33 +66,33 @@ It maps the operations from user space to kernel. For example, when a program in
 
 The process of initializing a deriver can be described as shown in *Figure 2*:
 
-![image-20181212145430330](README.assets/image-20181212145430330-4597670.png)
+<p align="center"><img src="./README.assets/image-20181212145430330-4597670.png"></p>
 
-<center>Figure 2: Function Flow of init_modules()</center>
+<p align="center">Figure 2: Function Flow of init_modules()</p>
 
 Firstly, it registers the character device named as `mydev`, and then initializes and activates this device. Note that the device should be registered before it is initialized. After that, the program allocates DMA buffer to store data like student ID, interrupt times, or other data come from user space. Fourthly, allocate space for work routine. And then, it initialize `IRQ_handler`, which is required in `bonus`. Lastly, it initializes DMA via assigning 0 or '0' to all DMA buffers. This dose nothing in `./test` (because it invokes `drv_ioctl()` in advance whenever it need to call `drv_write()` or `drv_read()`), but it can avoid user program getting dirty content just after the driver initialization.
 
 If remove the driver, it will go through the following process:
 
-![image-20181212145814395](README.assets/image-20181212145814395-4597894.png)
+<p align="center"><img src="README.assets/image-20181212145814395-4597894.png"></p>
 
-<center>Figure 3: Function Flow of exit_modules()</center>
+<p align="center">Figure 3: Function Flow of exit_modules()</p>
 
 As shown in *Figure 3*, the `exit_modules()` actually does the opposed things against `init_modules` in reversed order.
 
 Then, the `drv_write()` can be implemented as *Figure 4*:
 
-![image-20181212151304622](README.assets/image-20181212151304622-4598784.png)
+<p align="center"><img src="README.assets/image-20181212151304622-4598784.png"></p>
 
-<center>Figure 4: Function Flow of drv_write()</center>
+<p align="center">Figure 4: Function Flow of drv_write()</p>
 
 As shown in *Figure 4*, the `drv_write()` first gets `IOMode` from `DMABLOCKADDR` to determine whether it need to blocking. Then, it initializes the work_routine by binding to `drv_arithmetic_routine`, which responses for the arithmetic procedure for the device. To implement arithmetic procedure, `drv_write` also need to copy the `data` (contains `operator`, `operand 1` and `operand 2`) from user space to corresponding buffers in DMA. Finally, it invokes `shedule_work()` (and `flush_sheduled_work()`) according to `IOMode`.
 
 For `drv_read()`, it is much easier, it just need to get the answer from `DMAANSADDR` and then copy this value to user space. Note that the `drv_read()` also cleans the answer in DMA buffer and resets readable bit according to the specification from the assignment.
 
-![image-20181212211154803](README.assets/image-20181212211154803-4620314.png)
+<p align="center"><img src="README.assets/image-20181212211154803-4620314.png"></p>
 
-<center>Figure 5: Function Flow of read()</center>
+<p align="center">Figure 5: Function Flow of read()</p>
 
 The function flows of `drv_ioctl()` and `drv_arithmetic_routine()` are much easier to be shown in words.
 
@@ -148,9 +148,9 @@ $ dmesg
 
 In my case, the available MAJOR number is 245 while the MINOR is 0, so I can type `sudo ./mkdev.sh 245 0` like *Figure 6*:
 
-![image-20181212214816003](README.assets/image-20181212214816003-4622496.png)
+<p align="center"><img src="README.assets/image-20181212214816003-4622496.png"></p>
 
-<center>Figure 6: Steps to Build File Node</center>
+<p align="center">Figure 6: Steps to Build File Node</p>
 
 To test the driver, run:
 
@@ -174,42 +174,42 @@ $ sudo ./rmdev.sh
 
 ### Result
 
-![image-20181212214536021](README.assets/image-20181212214536021-4622336.png)
+<p align="center"><img src="README.assets/image-20181212214536021-4622336.png"></p>
 
-<center>
+<p align="center">
     Figure 7: Correctness Check for Arithmetic Routine
-</center>
+</p>
 
-![image-20181212214606204](README.assets/image-20181212214606204-4622366.png)
+<p align="center"><img src="README.assets/image-20181212214606204-4622366.png"></p>
 
-<center>Figure 8: Correctness Check for Arithmetic Routine (Cont.)
-</center>
+<p align="center">Figure 8: Correctness Check for Arithmetic Routine (Cont.)
+</p>
 
 As shown in *Figure 7* and *Figure 8*, this procedure almost tests all the functions required in assignment specification. The program works as expected.
 
 
 
-![image-20181211225415595](README.assets/image-20181211225415595-4540055.png)
+<p align="center"><img src="README.assets/image-20181211225415595-4540055.png"></p>
 
-<center>Figure 9: Check Correcteness After Inserting mydev.ko</center>
-
-Works as expected.
-
-![image-20181211225501215](README.assets/image-20181211225501215-4540101.png)
-
-<center>Figure 10: Check Correcteness After Running test</center>
+<p align="center">Figure 9: Check Correcteness After Inserting mydev.ko</p>
 
 Works as expected.
 
-![image-20181211225559998](README.assets/image-20181211225559998-4540160.png)
+<p align="center"><img src="README.assets/image-20181211225501215-4540101.png"></p>
 
-<center>Figure 11: Check Correcteness After Removing mydev.ko</center>
+<p align="center">Figure 10: Check Correcteness After Running test</p>
 
 Works as expected.
 
-![image-20181211225702931](README.assets/image-20181211225702931-4540223.png)
+<p align="center"><img src="README.assets/image-20181211225559998-4540160.png"></p>
 
-<center>Figure 12: Check Correctness of the Whole Program</center>
+<p align="center">Figure 11: Check Correcteness After Removing mydev.ko</p>
+
+Works as expected.
+
+<p align="center"><img src="README.assets/image-20181211225702931-4540223.png"></p>
+
+<p align="center">Figure 12: Check Correctness of the Whole Program</p>
 
 Works as expected.
 
