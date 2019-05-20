@@ -1,0 +1,35 @@
+    // kernel test start  
+
+    u32 fp = open("t.txt\0", G_WRITE);
+
+    write(input, 64, fp);
+
+    fp = open("b.txt\0", G_WRITE);
+
+    write(input+32, 32, fp);
+
+    fp = open("t.txt\0", G_WRITE);
+
+    write(input+32, 32, fp);
+
+    fp = open("t.txt\0", G_READ);
+
+    read(output, 32, fp);
+
+    gsys(LS_D);
+
+    gsys(LS_S);
+
+    fp = open("b.txt\0", G_WRITE);
+
+    write(input+64, 12, fp);
+
+    gsys(LS_S);
+
+    gsys(LS_D);
+
+    gsys(RM, "t.txt\0");
+
+    gsys(LS_S);
+
+    // kernel test end
